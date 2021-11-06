@@ -94,6 +94,21 @@ impl ZEvent {
         level,
         restored,
       };
+    } else if let Some(c) = ZOMBIE.captures(&e.text) {
+      from = c["from"].to_owned();
+      to = c["to"].to_owned();
+      let level = c["level"].to_owned();
+      let affected = c["affected"]
+        .split(',')
+        .collect::<String>()
+        .parse::<usize>()
+        .unwrap();
+      let converted = c.name("convert").is_some();
+      event = EventType::Zombie {
+        level,
+        converted,
+        affected,
+      }
     } else {
       return None;
     }
