@@ -1,0 +1,17 @@
+[package]
+name = "ns_zday_data"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+regex = "*"
+educe = "*"
+lazy_static ="*"
+[dependencies.serde]
+version ="*"
+features = ["derive"]
+[dependencies.quick-xml]
+version = "*"
+features = ["serialize"]
