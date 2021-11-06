@@ -41,7 +41,8 @@ lazy_static::lazy_static! {
     (?P<level>[a-zA-Z]*) Horde from @@(?P<from>[a-z0-9_\\-])@@, infecting (?P<affected>[\\d,]*) \
     million survivors\\.|(?P<convert> and converting to a zombie exporter! Oh no!)"
   ).unwrap();
-  static ref KILL:Regex = Regex::new("@@(?P<to>[a-z0-9_\\-]) was cleansed by@@").unwrap();
+  static ref KILL:Regex = Regex::new("@@(?P<to>[a-z0-9_\\-])@@ was cleansed by a Level (?P<level>[1-5]) \
+  [a-zA-Z]* Tactical Zombie Elimination Squad from @@(?P<from>[a-z0-9_\\-])@@, killing (?P<affected>[\\d,]*) million infected\\.").unwrap();
 }
 impl ZEvent {
   pub fn from_event(e: Event) -> Option<Self> {
@@ -87,6 +88,16 @@ impl ZEvent {
         converted,
         affected,
       }
+    } else if let Some(c) = KILL.captures(&e.text) {
+      from = c["from"].to_owned();
+      to = c["to"].to_owned();
+      let affected = c["affected"]
+        .split(',')
+        .collect::<String>()
+        .parse::<usize>()
+        .unwrap();
+      let level = c["level"].parse().unwrap();
+      event = EventType::Kill { affected, level };
     } else {
       return None;
     }

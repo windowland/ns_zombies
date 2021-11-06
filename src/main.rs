@@ -1,5 +1,4 @@
 mod happenings;
-use educe::Educe;
 use happenings::Event;
 use quick_xml::de::from_str;
 use quick_xml::se::to_string;
