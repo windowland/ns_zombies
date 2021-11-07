@@ -17,7 +17,6 @@ fn main() -> Result<(), Box<dyn Error>> {
   } else {
     let file = from_str::<Vec<Event>>(&file?)?;
     let regex = Regex::new("ravage||cleanse||struck||relocated")?;
-    println!("{}", file.iter().filter_map(ZEvent::from_event).count());
     activities = file
       .into_iter()
       .filter(|e| regex.is_match(&e.text))
