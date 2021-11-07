@@ -16,7 +16,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     activities = from_str::<Vec<Event>>(&read_to_string("activities.xml")?)?;
   } else {
     let file = from_str::<Vec<Event>>(&file?)?;
-    let regex = Regex::new("ravage||cleanse||struck||relocated")?;
+    let regex = Regex::new("(ravage)|(cleanse)|(struck)|(relocated)")?;
     activities = file
       .into_iter()
       .filter(|e| regex.is_match(&e.text))
