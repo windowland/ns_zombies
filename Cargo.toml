@@ -9,6 +9,7 @@ edition = "2021"
 regex = "*"
 educe = "*"
 lazy_static ="*"
+petgraph = "*"
 [dependencies.serde]
 version ="*"
 features = ["derive"]
