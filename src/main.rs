@@ -21,7 +21,15 @@ fn main() -> Result<(), Box<dyn Error>> {
       .into_iter()
       .filter(|e| regex.is_match(&e.text))
       .collect();
-    write("activites.xml", &to_string(&activities)?)?
+    write("activites.xml", &to_string(&activities)?)?;
   }
+  let mut events = activities
+    .iter()
+    .filter_map(|e| ZEvent::from_event(e))
+    .collect::<Vec<_>>();
+  events.sort_unstable();
+  events.dedup();
+
+  println!("{}", events.len());
   Ok(())
 }

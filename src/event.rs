@@ -2,9 +2,9 @@ use crate::happenings::Event;
 use educe::Educe;
 use regex::Regex;
 #[derive(Eq, PartialEq, Clone, PartialOrd, Ord, Debug)]
-pub enum EventType {
+pub enum EventType<'a> {
   Zombie {
-    level: String,
+    level: &'a str,
     converted: bool,
     affected: usize,
   },
@@ -18,18 +18,18 @@ pub enum EventType {
     affected: usize,
   },
   Move {
-    nation: String,
+    nation: &'a str,
   },
 }
 #[derive(Educe, Eq, Debug)]
 #[educe(PartialEq, PartialOrd, Ord)]
-pub struct ZEvent {
+pub struct ZEvent<'a> {
   #[educe(PartialEq(ignore), PartialOrd(ignore), Ord(ignore))]
   pub id: u64,
   pub timestamp: u64,
-  pub from: String,
-  pub to: String,
-  pub event: EventType,
+  pub from: &'a str,
+  pub to: &'a str,
+  pub event: EventType<'a>,
 }
 lazy_static::lazy_static! {
   static ref CURE:Regex = Regex::new(
@@ -46,16 +46,16 @@ lazy_static::lazy_static! {
   static ref MOVE:Regex = Regex::new("^@@(?P<nation>[a-z0-9_\\-]*)@@ relocated from %%(?P<from>[a-z0-9_\\-]*)%% \
   to %%(?P<to>[a-z0-9_\\-]*)%%\\.$").unwrap();
 }
-impl ZEvent {
-  pub fn from_event(e: &Event) -> Option<Self> {
+impl<'a> ZEvent<'a> {
+  pub fn from_event(e: &'a Event) -> Option<Self> {
     let id = e.id;
     let timestamp = e.timestamp;
     let from;
     let to;
     let event;
     if let Some(c) = CURE.captures(&e.text) {
-      from = c["from"].to_owned();
-      to = c["to"].to_owned();
+      from = c.name("from").unwrap().as_str();
+      to = c.name("to").unwrap().as_str();
       let affected = c["affected"]
         .split(',')
         .collect::<String>()
@@ -76,9 +76,9 @@ impl ZEvent {
         restored,
       };
     } else if let Some(c) = ZOMBIE.captures(&e.text) {
-      from = c["from"].to_owned();
-      to = c["to"].to_owned();
-      let level = c["level"].to_owned();
+      from = c.name("from").unwrap().as_str();
+      to = c.name("to").unwrap().as_str();
+      let level = c.name("level").unwrap().as_str();
       let affected = c["affected"]
         .split(',')
         .collect::<String>()
@@ -91,8 +91,8 @@ impl ZEvent {
         affected,
       }
     } else if let Some(c) = KILL.captures(&e.text) {
-      from = c["from"].to_owned();
-      to = c["to"].to_owned();
+      from = c.name("from").unwrap().as_str();
+      to = c.name("to").unwrap().as_str();
       let affected = c["affected"]
         .split(',')
         .collect::<String>()
@@ -101,10 +101,10 @@ impl ZEvent {
       let level = c["level"].parse().unwrap();
       event = EventType::Kill { affected, level };
     } else if let Some(c) = MOVE.captures(&e.text) {
-      from = c["from"].to_owned();
-      to = c["to"].to_owned();
+      from = c.name("from").unwrap().as_str();
+      to = c.name("to").unwrap().as_str();
       event = EventType::Move {
-        nation: c["nation"].to_owned(),
+        nation: c.name("nation").unwrap().as_str(),
       }
     } else {
       return None;
