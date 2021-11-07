@@ -1,7 +1,7 @@
 use crate::happenings::Event;
 use educe::Educe;
 use regex::Regex;
-#[derive(Eq, PartialEq, Clone, PartialOrd, Ord, Debug)]
+#[derive(Eq, PartialEq, Clone, PartialOrd, Ord, Debug, Copy)]
 pub enum EventType<'a> {
   Zombie {
     level: &'a str,
@@ -21,7 +21,12 @@ pub enum EventType<'a> {
     nation: &'a str,
   },
 }
-#[derive(Educe, Eq, Debug)]
+impl EventType<'_> {
+  pub fn is_attack(&self) -> bool {
+    !matches!(self, EventType::Move { .. })
+  }
+}
+#[derive(Educe, Eq, Debug, Clone, Copy)]
 #[educe(PartialEq, PartialOrd, Ord)]
 pub struct ZEvent<'a> {
   #[educe(PartialEq(ignore), PartialOrd(ignore), Ord(ignore))]
@@ -117,4 +122,40 @@ impl<'a> ZEvent<'a> {
       event,
     })
   }
+  fn to_graph(events: &[Self]) -> Graph<&'a str, Self> {
+    let mut graph = Graph::with_capacity(1500, events.len());
+    let mut index_map = BTreeMap::new();
+    let mut move_map = BTreeMap::new();
+    for event in events {
+      if event.event.is_attack() {
+        let start = if let Some(idx) = index_map.get(event.from) {
+          *idx
+        } else {
+          let idx = graph.add_node(event.from);
+          index_map.insert(event.from, idx);
+          idx
+        };
+        let end = if let Some(idx) = index_map.get(event.to) {
+          *idx
+        } else {
+          let idx = graph.add_node(event.to);
+          index_map.insert(event.to, idx);
+          idx
+        };
+        graph.add_edge(start, end, *event);
+      } else {
+        if let EventType::Move { nation } = event.event {
+          move_map
+            .get_mut(nation)
+            .map(|v: &mut Vec<_>| v.push(event))
+            .or_else(|| Some(drop(move_map.insert(nation, vec![event]))));
+        } else {
+          unreachable!()
+        }
+      }
+    }
+    graph
+  }
 }
+use petgraph::Graph;
+use std::collections::BTreeMap;

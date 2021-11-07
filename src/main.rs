@@ -29,7 +29,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     .collect::<Vec<_>>();
   events.sort_unstable();
   events.dedup();
-
   println!("{}", events.len());
   Ok(())
 }
