@@ -13,7 +13,7 @@ fn main() -> Result<(), Box<dyn Error>> {
   let file = read_to_string("happenings.xml");
   let activities;
   if matches!(file, Err(ref e) if e.kind() == ErrorKind::NotFound) {
-    activities = from_str::<Vec<Event>>(&read_to_string("../activities.xml")?)?;
+    activities = from_str::<Vec<Event>>(&read_to_string("activities.xml")?)?;
   } else {
     let file = from_str::<Vec<Event>>(&file?)?;
     let regex = Regex::new("ravage||cleanse||struck||relocated")?;
