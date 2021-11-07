@@ -33,19 +33,21 @@ pub struct ZEvent {
 }
 lazy_static::lazy_static! {
   static ref CURE:Regex = Regex::new(
-    "@@(?P<to>[a-z0-9_\\-])@@ was struck by a Mk (?P<level>[IV]{1,3}) \\([a-zA-Z]*\\) \
-    Cure Missile from @@(?P<from>[a-z0-9_\\-])@@, curing (?P<affected>[\\d,]*) million infected\\.| (p<restore>\
-    and restoring to a zombie researcher!)"
+    "^@@(?P<to>[a-z0-9_\\-]*)@@ was struck by a Mk (?P<level>[IV]{1,3}) \\([a-zA-Z]*\\) \
+    Cure Missile from @@(?P<from>[a-z0-9_\\-]*)@@, curing (?P<affected>[\\d,]*) million infected(\\.)| (p<restore>\
+    and restoring to a zombie researcher!)$"
   ).unwrap();
-  static ref ZOMBIE:Regex = Regex::new("@@(?P<to>[a-z0-9_\\-])@@ was ravaged by a Zombie \
-    (?P<level>[a-zA-Z]*) Horde from @@(?P<from>[a-z0-9_\\-])@@, infecting (?P<affected>[\\d,]*) \
-    million survivors\\.|(?P<convert> and converting to a zombie exporter! Oh no!)"
+  static ref ZOMBIE:Regex = Regex::new("^@@(?P<to>[a-z0-9_\\-]*)@@ was ravaged by a Zombie \
+    (?P<level>[a-zA-Z]*) Horde from @@(?P<from>[a-z0-9_\\-]*)@@, infecting (?P<affected>[\\d,]*) \
+    million survivors((\\.)|(?P<convert> and converting to a zombie exporter! Oh no!))$"
   ).unwrap();
-  static ref KILL:Regex = Regex::new("@@(?P<to>[a-z0-9_\\-])@@ was cleansed by a Level (?P<level>[1-5]) \
-  [a-zA-Z]* Tactical Zombie Elimination Squad from @@(?P<from>[a-z0-9_\\-])@@, killing (?P<affected>[\\d,]*) million infected\\.").unwrap();
+  static ref KILL:Regex = Regex::new("^@@(?P<to>[a-z0-9_\\-]*)@@ was cleansed by a Level (?P<level>[1-5]) \
+  [a-zA-Z]* Tactical Zombie Elimination Squad from @@(?P<from>[a-z0-9_\\-]*)@@, killing (?P<affected>[\\d,]*) million infected\\.$").unwrap();
+  static ref MOVE:Regex = Regex::new("^@@(?P<nation>[a-z0-9_\\-]*)@@ relocated from %%(?P<from>[a-z0-9_\\-]*)%% \
+  to %%(?P<to>[a-z0-9_\\-]*)%%\\.$").unwrap();
 }
 impl ZEvent {
-  pub fn from_event(e: Event) -> Option<Self> {
+  pub fn from_event(e: &Event) -> Option<Self> {
     let id = e.id;
     let timestamp = e.timestamp;
     let from;
@@ -98,6 +100,12 @@ impl ZEvent {
         .unwrap();
       let level = c["level"].parse().unwrap();
       event = EventType::Kill { affected, level };
+    } else if let Some(c) = MOVE.captures(&e.text) {
+      from = c["from"].to_owned();
+      to = c["to"].to_owned();
+      event = EventType::Move {
+        nation: c["nation"].to_owned(),
+      }
     } else {
       return None;
     }
