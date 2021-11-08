@@ -122,7 +122,7 @@ impl<'a> ZEvent<'a> {
       event,
     })
   }
-  fn to_graph(events: &[Self]) -> EventGraph<'_> {
+  pub fn to_graph(events: &[Self]) -> EventGraph<'_> {
     let mut graph = Graph::with_capacity(1500, events.len());
     let mut index_map = BTreeMap::new();
     let mut move_map = BTreeMap::new();

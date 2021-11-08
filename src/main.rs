@@ -29,6 +29,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     .collect::<Vec<_>>();
   events.sort_unstable();
   events.dedup();
+  ZEvent::to_graph(&events);
   println!("{}", events.len());
   Ok(())
 }
