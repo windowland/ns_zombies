@@ -148,8 +148,8 @@ impl<'a> ZEvent<'a> {
           .get_mut(nation)
           .map(|v: &mut Vec<_>| v.push(event))
           .or_else(|| {
-              drop(move_map.insert(nation, vec![event]));
-              Some(())
+            drop(move_map.insert(nation, vec![event]));
+            Some(())
           });
       } else {
         unreachable!()
@@ -169,4 +169,21 @@ pub struct EventGraph<'a> {
   pub index_map: BTreeMap<&'a str, NodeIndex>,
   pub move_map: BTreeMap<&'a str, Vec<&'a ZEvent<'a>>>,
   pub graph: Graph<&'a str, &'a ZEvent<'a>>,
+}
+
+#[derive(Eq, PartialEq, Ord, PartialOrd, Clone, Default)]
+pub struct EventStats {
+  pub missiles_used: usize,
+  pub others_cured: usize,
+  pub hordes_used: usize,
+  pub others_zombified: usize,
+  pub tzes_used: usize,
+  pub others_killed: usize,
+  pub hit_by_missiles: usize,
+  pub cured_by_others: usize,
+  pub hit_by_hordes: usize,
+  pub zombified_by_others: usize,
+  pub hit_by_tzes: usize,
+  pub killed_by_others: usize,
+  pub min_time: usize,
 }
