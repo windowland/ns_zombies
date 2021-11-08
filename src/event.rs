@@ -122,7 +122,7 @@ impl<'a> ZEvent<'a> {
       event,
     })
   }
-  fn to_graph(events: &[Self]) -> Graph<&'a str, Self> {
+  fn to_graph(events: &[Self]) -> EventGraph<'_> {
     let mut graph = Graph::with_capacity(1500, events.len());
     let mut index_map = BTreeMap::new();
     let mut move_map = BTreeMap::new();
@@ -142,7 +142,7 @@ impl<'a> ZEvent<'a> {
           index_map.insert(event.to, idx);
           idx
         };
-        graph.add_edge(start, end, *event);
+        graph.add_edge(start, end, event);
       } else {
         if let EventType::Move { nation } = event.event {
           move_map
@@ -154,8 +154,18 @@ impl<'a> ZEvent<'a> {
         }
       }
     }
-    graph
+    EventGraph {
+      graph,
+      index_map,
+      move_map,
+    }
   }
 }
+use petgraph::graph::NodeIndex;
 use petgraph::Graph;
 use std::collections::BTreeMap;
+pub struct EventGraph<'a> {
+  pub index_map: BTreeMap<&'a str, NodeIndex>,
+  pub move_map: BTreeMap<&'a str, Vec<&'a ZEvent<'a>>>,
+  pub graph: Graph<&'a str, &'a ZEvent<'a>>,
+}
