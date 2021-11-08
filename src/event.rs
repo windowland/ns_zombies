@@ -143,15 +143,16 @@ impl<'a> ZEvent<'a> {
           idx
         };
         graph.add_edge(start, end, event);
+      } else if let EventType::Move { nation } = event.event {
+        move_map
+          .get_mut(nation)
+          .map(|v: &mut Vec<_>| v.push(event))
+          .or_else(|| {
+              drop(move_map.insert(nation, vec![event]));
+              Some(())
+          });
       } else {
-        if let EventType::Move { nation } = event.event {
-          move_map
-            .get_mut(nation)
-            .map(|v: &mut Vec<_>| v.push(event))
-            .or_else(|| Some(drop(move_map.insert(nation, vec![event]))));
-        } else {
-          unreachable!()
-        }
+        unreachable!()
       }
     }
     EventGraph {
