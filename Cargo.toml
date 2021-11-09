@@ -11,6 +11,7 @@ educe = "*"
 lazy_static ="*"
 petgraph = "*"
 csv = "*"
+derive_more = "*"
 [dependencies.serde]
 version ="*"
 features = ["derive"]

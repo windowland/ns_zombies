@@ -170,8 +170,8 @@ pub struct EventGraph<'a> {
   pub move_map: BTreeMap<&'a str, Vec<&'a ZEvent<'a>>>,
   pub graph: Graph<&'a str, &'a ZEvent<'a>>,
 }
-
-#[derive(Eq, PartialEq, Ord, PartialOrd, Clone, Default)]
+use derive_more::*;
+#[derive(Eq, PartialEq, Ord, PartialOrd, Clone, Default, Add, Sum, Sub, Mul, Div)]
 pub struct EventStats {
   pub missiles_used: usize,
   pub others_cured: usize,
