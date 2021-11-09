@@ -10,6 +10,7 @@ regex = "*"
 educe = "*"
 lazy_static ="*"
 petgraph = "*"
+csv = "*"
 [dependencies.serde]
 version ="*"
 features = ["derive"]
