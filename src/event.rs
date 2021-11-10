@@ -1,7 +1,7 @@
 use crate::happenings::Event;
 use educe::Educe;
 use regex::Regex;
-#[derive(Eq, PartialEq, Clone, PartialOrd, Ord, Debug, Copy)]
+#[derive(Eq, PartialEq, Clone, PartialOrd, Ord, Debug, Copy, IsVariant)]
 pub enum EventType<'a> {
   Zombie {
     level: &'a str,
@@ -169,6 +169,63 @@ pub struct EventGraph<'a> {
   pub index_map: BTreeMap<&'a str, NodeIndex>,
   pub move_map: BTreeMap<&'a str, Vec<&'a ZEvent<'a>>>,
   pub graph: Graph<&'a str, &'a ZEvent<'a>>,
+}
+use petgraph::Direction;
+impl<'a> EventGraph<'a> {
+  pub fn get_stats(&self) -> BTreeMap<&'a str, EventStats> {
+    let mut stat_map = BTreeMap::new();
+    for (&nation, &i) in &self.index_map {
+      let incoming = self.graph.edges_directed(i, Direction::Incoming);
+      let outgoing = self.graph.edges_directed(i, Direction::Outgoing);
+      let incoming_sum: EventStats = incoming
+        .map(|e| *e.weight())
+        .map(|e| match e.event {
+          EventType::Cure { affected, .. } => EventStats {
+            cured_by_others: affected,
+            hit_by_missiles: 1,
+            ..Default::default()
+          },
+          EventType::Kill { affected, .. } => EventStats {
+            killed_by_others: affected,
+            hit_by_tzes: 1,
+            ..Default::default()
+          },
+          EventType::Zombie { affected, .. } => EventStats {
+            zombified_by_others: affected,
+            hit_by_hordes: 1,
+            ..Default::default()
+          },
+          _ => unreachable!(),
+        })
+        .sum();
+      let outgoing_sum: EventStats = outgoing
+        .map(|e| *e.weight())
+        .map(|e| match e.event {
+          EventType::Cure { affected, .. } => EventStats {
+            others_cured: affected,
+            missiles_used: 1,
+            min_time: 20,
+            ..Default::default()
+          },
+          EventType::Kill { affected, .. } => EventStats {
+            others_killed: affected,
+            tzes_used: 1,
+            min_time: 20,
+            ..Default::default()
+          },
+          EventType::Zombie { affected, .. } => EventStats {
+            zombified_by_others: affected,
+            hit_by_hordes: 1,
+            min_time: 20,
+            ..Default::default()
+          },
+          _ => unreachable!(),
+        })
+        .sum();
+      stat_map.insert(nation, incoming_sum + outgoing_sum);
+    }
+    stat_map
+  }
 }
 use derive_more::*;
 #[derive(Eq, PartialEq, Ord, PartialOrd, Clone, Default, Add, Sum, Sub, Mul, Div)]
