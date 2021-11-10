@@ -254,7 +254,11 @@ impl<'a> EventGraph<'a> {
   }
 }
 use derive_more::*;
-#[derive(Eq, PartialEq, Ord, PartialOrd, Clone, Default, Add, Sum, Sub, Mul, Div)]
+use serde::Deserialize;
+use serde::Serialize;
+#[derive(
+  Eq, PartialEq, Ord, PartialOrd, Clone, Default, Add, Sum, Sub, Mul, Div, Serialize, Deserialize,
+)]
 pub struct EventStats {
   pub missiles_used: usize,
   pub others_cured: usize,
@@ -269,4 +273,9 @@ pub struct EventStats {
   pub hit_by_tzes: usize,
   pub killed_by_others: usize,
   pub min_time: usize,
+}
+#[derive(Serialize, Deserialize)]
+pub struct NationData<'a> {
+  nation: &'a str,
+  data: EventStats,
 }
