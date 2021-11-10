@@ -23,7 +23,50 @@ pub enum EventType<'a> {
 }
 impl EventType<'_> {
   pub fn is_attack(&self) -> bool {
-    !matches!(self, EventType::Move { .. })
+    !self.is_move()
+  }
+  pub fn stats_incoming(self) -> EventStats {
+    match self {
+      EventType::Cure { affected, .. } => EventStats {
+        cured_by_others: affected,
+        hit_by_missiles: 1,
+        ..Default::default()
+      },
+      EventType::Kill { affected, .. } => EventStats {
+        killed_by_others: affected,
+        hit_by_tzes: 1,
+        ..Default::default()
+      },
+      EventType::Zombie { affected, .. } => EventStats {
+        zombified_by_others: affected,
+        hit_by_hordes: 1,
+        ..Default::default()
+      },
+      _ => unreachable!(),
+    }
+  }
+  pub fn stats_outgoing(self) -> EventStats {
+    match self {
+      EventType::Cure { affected, .. } => EventStats {
+        others_cured: affected,
+        missiles_used: 1,
+        min_time: 20,
+        ..Default::default()
+      },
+      EventType::Kill { affected, .. } => EventStats {
+        others_killed: affected,
+        tzes_used: 1,
+        min_time: 20,
+        ..Default::default()
+      },
+      EventType::Zombie { affected, .. } => EventStats {
+        zombified_by_others: affected,
+        hit_by_hordes: 1,
+        min_time: 20,
+        ..Default::default()
+      },
+      _ => unreachable!(),
+    }
   }
 }
 #[derive(Educe, Eq, Debug, Clone, Copy)]
@@ -179,48 +222,11 @@ impl<'a> EventGraph<'a> {
       let outgoing = self.graph.edges_directed(i, Direction::Outgoing);
       let incoming_sum: EventStats = incoming
         .map(|e| *e.weight())
-        .map(|e| match e.event {
-          EventType::Cure { affected, .. } => EventStats {
-            cured_by_others: affected,
-            hit_by_missiles: 1,
-            ..Default::default()
-          },
-          EventType::Kill { affected, .. } => EventStats {
-            killed_by_others: affected,
-            hit_by_tzes: 1,
-            ..Default::default()
-          },
-          EventType::Zombie { affected, .. } => EventStats {
-            zombified_by_others: affected,
-            hit_by_hordes: 1,
-            ..Default::default()
-          },
-          _ => unreachable!(),
-        })
+        .map(|e| e.event.stats_incoming())
         .sum();
-      let outgoing_sum: EventStats = outgoing
+      let outgoing_sum = outgoing
         .map(|e| *e.weight())
-        .map(|e| match e.event {
-          EventType::Cure { affected, .. } => EventStats {
-            others_cured: affected,
-            missiles_used: 1,
-            min_time: 20,
-            ..Default::default()
-          },
-          EventType::Kill { affected, .. } => EventStats {
-            others_killed: affected,
-            tzes_used: 1,
-            min_time: 20,
-            ..Default::default()
-          },
-          EventType::Zombie { affected, .. } => EventStats {
-            zombified_by_others: affected,
-            hit_by_hordes: 1,
-            min_time: 20,
-            ..Default::default()
-          },
-          _ => unreachable!(),
-        })
+        .map(|e| e.event.stats_outgoing())
         .sum();
       stat_map.insert(nation, incoming_sum + outgoing_sum);
     }
