@@ -81,16 +81,13 @@ pub struct ZEvent<'a> {
 }
 lazy_static::lazy_static! {
   static ref CURE:Regex = Regex::new(
-    "^@@(?P<to>[a-z0-9_\\-]*)@@ was struck by a Mk (?P<level>[IV]{1,3}) \\([a-zA-Z]*\\) \
-    Cure Missile from @@(?P<from>[a-z0-9_\\-]*)@@, curing (?P<affected>[\\d,]*) million infected(\\.)| (p<restore>\
-    and restoring to a zombie researcher!)$"
+    r"^@@(?P<to>[a-z0-9_\-]*)@@ was struck by a Mk (?P<level>[IV]{1,3}) \([a-zA-Z]*\) Cure Missile from @@(?P<from>[a-z0-9_\-]*)@@, curing (?P<affected>[\d,]*) million infected((\.)|(?P<restore> and restoring to an? [a-zA-Z\s]+!))$"
   ).unwrap();
   static ref ZOMBIE:Regex = Regex::new("^@@(?P<to>[a-z0-9_\\-]*)@@ was ravaged by a Zombie \
     (?P<level>[a-zA-Z]*) Horde from @@(?P<from>[a-z0-9_\\-]*)@@, infecting (?P<affected>[\\d,]*) \
     million survivors((\\.)|(?P<convert> and converting to a zombie exporter! Oh no!))$"
   ).unwrap();
-  static ref KILL:Regex = Regex::new("^@@(?P<to>[a-z0-9_\\-]*)@@ was cleansed by a Level (?P<level>[1-5]) \
-  [a-zA-Z\\s]*? Tactical Zombie Elimination Squad from @@(?P<from>[a-z0-9_\\-]*)@@, killing (?P<affected>[\\d,]*) million zombies\\.$").unwrap();
+  static ref KILL:Regex = Regex::new(r"^@@(?P<to>[a-z0-9_\-]*)@@ was cleansed by a Level (?P<level>[1-5]) [a-zA-Z]+(\s[a-zA-Z]+)? Tactical Zombie Elimination Squad from @@(?P<from>[a-z0-9_\-]*)@@, killing (?P<affected>[\d,]*) million zombies((\.)|(?P<restore> and restoring to an? [a-zA-Z\s]+!))$").unwrap();
   static ref MOVE:Regex = Regex::new("^@@(?P<nation>[a-z0-9_\\-]*)@@ relocated from %%(?P<from>[a-z0-9_\\-]*)%% \
   to %%(?P<to>[a-z0-9_\\-]*)%%\\.$").unwrap();
 }
