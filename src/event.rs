@@ -257,7 +257,20 @@ use derive_more::*;
 use serde::Deserialize;
 use serde::Serialize;
 #[derive(
-  Eq, PartialEq, Ord, PartialOrd, Clone, Default, Add, Sum, Sub, Mul, Div, Serialize, Deserialize,
+  Eq,
+  PartialEq,
+  Ord,
+  PartialOrd,
+  Debug,
+  Clone,
+  Default,
+  Add,
+  Sum,
+  Sub,
+  Mul,
+  Div,
+  Serialize,
+  Deserialize,
 )]
 pub struct EventStats {
   pub missiles_used: usize,
