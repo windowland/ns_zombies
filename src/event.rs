@@ -277,5 +277,6 @@ pub struct EventStats {
 #[derive(Serialize, Deserialize)]
 pub struct NationData<'a> {
   pub nation: &'a str,
+  #[serde(flatten)]
   pub data: EventStats,
 }

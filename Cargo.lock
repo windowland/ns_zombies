@@ -37,9 +37,8 @@ checksum = "6245d59a3e82a7fc217c5828a6692dbc6dfb63a0c8c90495621f7b9d79704a0e"
 
 [[package]]
 name = "csv"
-version = "1.1.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "22813a6dc45b335f9bade10bf7271dc477e81113e89eb251a0bc2a8a81c536e1"
+version = "1.1.5"
+source = "git+https://github.com/gootorov/rust-csv.git?rev=31d1105f9ee50bf02dff178f20be4a1ec9fdff2d#31d1105f9ee50bf02dff178f20be4a1ec9fdff2d"
 dependencies = [
  "bstr",
  "csv-core",
@@ -51,8 +50,7 @@ dependencies = [
 [[package]]
 name = "csv-core"
 version = "0.1.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2b2466559f260f48ad25fe6317b3c8dac77b5bdb5763ac7d9d6103530663bc90"
+source = "git+https://github.com/gootorov/rust-csv.git?rev=31d1105f9ee50bf02dff178f20be4a1ec9fdff2d#31d1105f9ee50bf02dff178f20be4a1ec9fdff2d"
 dependencies = [
  "memchr",
 ]
