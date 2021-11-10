@@ -90,7 +90,7 @@ lazy_static::lazy_static! {
     million survivors((\\.)|(?P<convert> and converting to a zombie exporter! Oh no!))$"
   ).unwrap();
   static ref KILL:Regex = Regex::new("^@@(?P<to>[a-z0-9_\\-]*)@@ was cleansed by a Level (?P<level>[1-5]) \
-  [a-zA-Z]* Tactical Zombie Elimination Squad from @@(?P<from>[a-z0-9_\\-]*)@@, killing (?P<affected>[\\d,]*) million infected\\.$").unwrap();
+  [a-zA-Z\\s]*? Tactical Zombie Elimination Squad from @@(?P<from>[a-z0-9_\\-]*)@@, killing (?P<affected>[\\d,]*) million zombies\\.$").unwrap();
   static ref MOVE:Regex = Regex::new("^@@(?P<nation>[a-z0-9_\\-]*)@@ relocated from %%(?P<from>[a-z0-9_\\-]*)%% \
   to %%(?P<to>[a-z0-9_\\-]*)%%\\.$").unwrap();
 }
