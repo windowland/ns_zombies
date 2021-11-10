@@ -42,7 +42,7 @@ impl EventType<'_> {
         hit_by_hordes: 1,
         ..Default::default()
       },
-      _ => unreachable!(),
+      _ => Default::default(),
     }
   }
   pub fn stats_outgoing(self) -> EventStats {
@@ -65,7 +65,7 @@ impl EventType<'_> {
         min_time: 20,
         ..Default::default()
       },
-      _ => unreachable!(),
+      _ => Default::default(),
     }
   }
 }
