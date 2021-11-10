@@ -232,6 +232,26 @@ impl<'a> EventGraph<'a> {
     }
     stat_map
   }
+  pub fn get_stats_regex(&self, regex: &Regex) -> EventStats {
+    self
+      .index_map
+      .iter()
+      .filter(|(&nation, _)| regex.is_match(nation))
+      .map(|(_, &i)| {
+        let outgoing: EventStats = self
+          .graph
+          .edges_directed(i, Direction::Outgoing)
+          .map(|e| e.weight().event.stats_outgoing())
+          .sum();
+        let incoming: EventStats = self
+          .graph
+          .edges_directed(i, Direction::Incoming)
+          .map(|e| e.weight().event.stats_incoming())
+          .sum();
+        outgoing + incoming
+      })
+      .sum()
+  }
 }
 use derive_more::*;
 #[derive(Eq, PartialEq, Ord, PartialOrd, Clone, Default, Add, Sum, Sub, Mul, Div)]
