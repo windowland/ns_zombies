@@ -60,8 +60,8 @@ impl EventType<'_> {
         ..Default::default()
       },
       EventType::Zombie { affected, .. } => EventStats {
-        zombified_by_others: affected,
-        hit_by_hordes: 1,
+        others_zombified: affected,
+        hordes_used: 1,
         min_time: 20,
         ..Default::default()
       },
