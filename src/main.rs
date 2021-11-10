@@ -35,7 +35,7 @@ fn main() -> Result<(), Box<dyn Error>> {
   let mut map = graph.get_stats();
   let krasnoyarsk = graph.get_stats_regex(&Regex::new(r"krasnoyarsk\-[0-9]+")?);
   map.insert("krasnoyarsk-*", krasnoyarsk);
-  let can = graph.get_stats_regex(&Regex::new(r"can\-[0-9]+")?);
+  let can = graph.get_stats_regex(&Regex::new(r"can\-([0-9]+)|(founder)")?);
   map.insert("can-*", can);
   map
     .into_iter()
