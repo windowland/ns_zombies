@@ -1,4 +1,5 @@
 mod happenings;
+use event::NationData;
 use event::ZEvent;
 use happenings::Event;
 use quick_xml::de::from_str;
@@ -29,7 +30,16 @@ fn main() -> Result<(), Box<dyn Error>> {
     .collect::<Vec<_>>();
   events.sort_unstable();
   events.dedup();
-  ZEvent::to_graph(&events);
-  println!("{}", events.len());
+  let mut write = csv::Writer::from_path("zdata.csv")?;
+  let graph = ZEvent::to_graph(&events);
+  let mut map = graph.get_stats();
+  let krasnoyarsk = graph.get_stats_regex(&Regex::new(r"krasnoyarsk\-[0-9]+")?);
+  map.insert("krasnoyarsk-*", krasnoyarsk);
+  let can = graph.get_stats_regex(&Regex::new(r"can\-[0-9]+")?);
+  map.insert("can-*", can);
+  map
+    .into_iter()
+    .map(|(nation, data)| NationData { nation, data })
+    .try_for_each(|n| write.serialize(n))?;
   Ok(())
 }
