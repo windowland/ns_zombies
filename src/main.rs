@@ -33,6 +33,8 @@ fn main() -> Result<(), Box<dyn Error>> {
   let mut write = csv::Writer::from_path("zdata.csv")?;
   let graph = ZEvent::to_graph(&events);
   let mut map = graph.get_stats();
+  let forest = map.values().cloned().sum();
+  map.insert("forest", forest);
   let krasnoyarsk = graph.get_stats_regex(&Regex::new(r"krasnoyarsk\-[0-9]+")?);
   map.insert("krasnoyarsk-*", krasnoyarsk);
   let can = graph.get_stats_regex(&Regex::new(r"can\-([0-9]+)|(founder)")?);
