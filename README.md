@@ -1,6 +1,6 @@
 # ns_zombies
 Analyzing Forest's zday individual stats.
-To run, simply use the command `cargo run --release`.
+To run, simply use the command `cargo run --release` (rust must be installed).
 The script looks for `happenings.xml` first, filters the non-zday events out, 
 and then writes the filtered results to `activities.xml`. If `happenings.xml` 
 doesn't exist, the script will attempt to read from `activities.xml`, aborting if it doesn't
