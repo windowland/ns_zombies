@@ -15,6 +15,7 @@ pub enum EventType<'a> {
   },
   Kill {
     level: usize,
+    restored: bool,
     affected: usize,
   },
   Move {
@@ -144,7 +145,13 @@ impl<'a> ZEvent<'a> {
         .parse::<usize>()
         .unwrap();
       let level = c["level"].parse().unwrap();
-      event = EventType::Kill { affected, level };
+      let restored = c.name("restore").is_some();
+
+      event = EventType::Kill {
+        affected,
+        level,
+        restored,
+      };
     } else if let Some(c) = MOVE.captures(&e.text) {
       from = c.name("from").unwrap().as_str();
       to = c.name("to").unwrap().as_str();
