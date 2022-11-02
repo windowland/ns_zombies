@@ -210,8 +210,9 @@ use petgraph::graph::NodeIndex;
 use petgraph::Graph;
 use std::collections::BTreeMap;
 pub struct EventGraph<'a> {
-    pub index_map: BTreeMap<&'a str, NodeIndex>,
     pub move_map: BTreeMap<&'a str, Vec<&'a ZEvent<'a>>>,
+    // would love to use a GraphMap here, but it doesn't support parallel edges
+    pub index_map: BTreeMap<&'a str, NodeIndex>,
     pub graph: Graph<&'a str, &'a ZEvent<'a>>,
 }
 use petgraph::Direction;
