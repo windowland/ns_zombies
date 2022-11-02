@@ -22,11 +22,11 @@ fn main() -> Result<(), Box<dyn Error>> {
             .into_iter()
             .filter(|e| regex.is_match(&e.text))
             .collect();
-        write("activites.xml", &to_string(&activities)?)?;
+        write("activities.xml", &to_string(&activities)?)?;
     }
     let mut events = activities
         .iter()
-        .filter_map(|e| ZEvent::from_event(e))
+        .filter_map(ZEvent::from_event)
         .collect::<Vec<_>>();
     events.sort_unstable();
     events.dedup();
@@ -37,6 +37,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     map.insert("forest", forest);
     let can = graph.get_stats_regex(&Regex::new(r"can\-([0-9]+)|(founder)")?);
     map.insert("can-*", can);
+    let rock = graph.get_stats_regex(&Regex::new(r"rock_([a-z_]+)|(founder)")?);
+    map.insert("rock-*", rock);
     map.into_iter()
         .map(|(nation, data)| NationData { nation, data })
         .try_for_each(|n| write.serialize(n))?;
