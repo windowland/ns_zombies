@@ -37,7 +37,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     map.insert("forest", forest);
     let can = graph.get_stats_regex(&Regex::new(r"can\-([0-9]+)|(founder)")?);
     map.insert("can-*", can);
-    let rock = graph.get_stats_regex(&Regex::new(r"rock_([a-z_]+)|(founder)")?);
+    let rock = graph.get_stats_regex(&Regex::new(r"rock_([a-z_]+)")?);
     map.insert("rock-*", rock);
     let haven = graph.get_stats_regex(&Regex::new(r"[a-z]+_haven")?);
     map.insert("haven-*", haven);
