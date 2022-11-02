@@ -11,37 +11,36 @@ use std::fs::write;
 use std::io::ErrorKind;
 mod event;
 fn main() -> Result<(), Box<dyn Error>> {
-  let file = read_to_string("happenings.xml");
-  let activities;
-  if matches!(file, Err(ref e) if e.kind() == ErrorKind::NotFound) {
-    activities = from_str::<Vec<Event>>(&read_to_string("activities.xml")?)?;
-  } else {
-    let file = from_str::<Vec<Event>>(&file?)?;
-    let regex = Regex::new("(ravage)|(cleanse)|(struck)|(relocated)")?;
-    activities = file
-      .into_iter()
-      .filter(|e| regex.is_match(&e.text))
-      .collect();
-    write("activites.xml", &to_string(&activities)?)?;
-  }
-  let mut events = activities
-    .iter()
-    .filter_map(|e| ZEvent::from_event(e))
-    .collect::<Vec<_>>();
-  events.sort_unstable();
-  events.dedup();
-  let mut write = csv::Writer::from_path("zdata.csv")?;
-  let graph = ZEvent::to_graph(&events);
-  let mut map = graph.get_stats();
-  let forest = map.values().cloned().sum();
-  map.insert("forest", forest);
-  let krasnoyarsk = graph.get_stats_regex(&Regex::new(r"krasnoyarsk\-[0-9]+")?);
-  map.insert("krasnoyarsk-*", krasnoyarsk);
-  let can = graph.get_stats_regex(&Regex::new(r"can\-([0-9]+)|(founder)")?);
-  map.insert("can-*", can);
-  map
-    .into_iter()
-    .map(|(nation, data)| NationData { nation, data })
-    .try_for_each(|n| write.serialize(n))?;
-  Ok(())
+    let file = read_to_string("happenings.xml");
+    let activities;
+    if matches!(file, Err(ref e) if e.kind() == ErrorKind::NotFound) {
+        activities = from_str::<Vec<Event>>(&read_to_string("activities.xml")?)?;
+    } else {
+        let file = from_str::<Vec<Event>>(&file?)?;
+        let regex = Regex::new("(ravage)|(cleanse)|(struck)|(relocated)")?;
+        activities = file
+            .into_iter()
+            .filter(|e| regex.is_match(&e.text))
+            .collect();
+        write("activites.xml", &to_string(&activities)?)?;
+    }
+    let mut events = activities
+        .iter()
+        .filter_map(|e| ZEvent::from_event(e))
+        .collect::<Vec<_>>();
+    events.sort_unstable();
+    events.dedup();
+    let mut write = csv::Writer::from_path("zdata.csv")?;
+    let graph = ZEvent::to_graph(&events);
+    let mut map = graph.get_stats();
+    let forest = map.values().cloned().sum();
+    map.insert("forest", forest);
+    let krasnoyarsk = graph.get_stats_regex(&Regex::new(r"krasnoyarsk\-[0-9]+")?);
+    map.insert("krasnoyarsk-*", krasnoyarsk);
+    let can = graph.get_stats_regex(&Regex::new(r"can\-([0-9]+)|(founder)")?);
+    map.insert("can-*", can);
+    map.into_iter()
+        .map(|(nation, data)| NationData { nation, data })
+        .try_for_each(|n| write.serialize(n))?;
+    Ok(())
 }
