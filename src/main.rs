@@ -39,6 +39,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     map.insert("can-*", can);
     let rock = graph.get_stats_regex(&Regex::new(r"rock_([a-z_]+)|(founder)")?);
     map.insert("rock-*", rock);
+    let haven = graph.get_stats_regex(&Regex::new(r"[a-z]+_haven")?);
+    map.insert("haven-*", haven);
     map.into_iter()
         .map(|(nation, data)| NationData { nation, data })
         .try_for_each(|n| write.serialize(n))?;
