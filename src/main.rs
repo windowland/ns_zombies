@@ -22,7 +22,14 @@ fn main() -> Result<(), Box<dyn Error>> {
             .into_iter()
             .filter(|e| regex.is_match(&e.text))
             .collect();
-        write("activities.xml", &to_string(&activities)?)?;
+        write(
+            "activities.xml",
+            activities
+                .iter()
+                .map(|activity| to_string(activity))
+                .collect::<Result<Vec<_>, _>>()?
+                .join(""),
+        )?;
     }
     let mut events = activities
         .iter()
