@@ -42,11 +42,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut map = graph.get_stats();
     let forest = map.values().cloned().sum();
     map.insert("forest", forest);
-    let can = graph.get_stats_regex(&Regex::new(r"can\-([0-9]+)|(founder)")?);
+    let can = graph.get_stats_regex(&Regex::new(r"can\-?([0-9]+)|(founder)|(altia)")?);
     map.insert("can-*", can);
-    let rock = graph.get_stats_regex(&Regex::new(r"rock_([a-z_]+)")?);
+    let rock = graph.get_stats_regex(&Regex::new(r"(zerphen)|(rock_([a-z_]+))")?);
     map.insert("rock-*", rock);
-    let haven = graph.get_stats_regex(&Regex::new(r"[a-z]+_haven")?);
+    let haven = graph.get_stats_regex(&Regex::new(r"([a-z]+_haven)|(fad)|(a_once_great_nation)")?);
     map.insert("haven-*", haven);
     map.into_iter()
         .map(|(nation, data)| NationData { nation, data })
